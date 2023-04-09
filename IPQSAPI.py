@@ -3,7 +3,9 @@ import requests
 import urllib
 
 class IPQSAPI:
-        key = 'fi4mcakq7erKrWA3aW4CmGIxqcOuWkSk'
+        def __init__(self,ui):
+                self.key = 'uQKdGdrNZsNMB2YpmCIj9GNFsccHrtwH'
+                self.ui = ui
 
         def malicious_url_scanner(self,url):
                 url = 'https://www.ipqualityscore.com/api/json/url/%s/%s' % (self.key, urllib.parse.quote_plus(url))
@@ -11,25 +13,38 @@ class IPQSAPI:
                 return (json.loads(x.text))
 
         def isUnsafe(self,url):
-                return self.malicious_url_scanner(url)['unsafe']
+                self.results = self.malicious_url_scanner(url)
+                if self.ui.unsafeState.get() == 0:
+                        return False
+                return self.results['unsafe']
 
         def isSpamming(self,url):
-                return self.malicious_url_scanner(url)['spamming']
+                if self.ui.spamState.get() == 0:
+                        return False
+                return self.results['spamming']
 
         def isMalware(self,url):
-                return self.malicious_url_scanner(url)['malware']
+                if self.ui.malwareState.get() == 0:
+                        return False
+                return self.results['malware']
 
         def isPhishing(self,url):
-                return self.malicious_url_scanner(url)['phishing']
+                if self.ui.phishingState.get():
+                        return False
+                return self.results['phishing']
 
         def isSuspicious(self,url):
+                if self.ui.suspiciousState.get() == 0:
+                        return False
                 return self.malicious_url_scanner(url)['suspicious']
 
         def isAdult(self,url):
-                return self.malicious_url_scanner(url)['adult']
+                if self.ui.adultState.get() == 0:
+                        return False
+                return self.results['adult']
 
         def getRiskScore(self,url):
-                return self.malicious_url_scanner(url)['risk_score']
+                return self.results['risk_score']
 
 
 
